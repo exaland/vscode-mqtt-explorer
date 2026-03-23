@@ -1,0 +1,5 @@
+**/.git/**
+**/.github/**
+**/*.map
+**/.vscode-test/**
+node_modules/**/.bin/**

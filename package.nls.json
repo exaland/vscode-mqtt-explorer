@@ -1,0 +1,17 @@
+{
+  "extension.displayName": "MQTT Explorer",
+  "extension.description": "Explore MQTT topics in a VS Code tree view, inspect payloads, and publish messages.",
+  "command.connect": "MQTT Explorer: Connect",
+  "command.openConnectionManager": "MQTT Explorer: Open Connection Manager",
+  "command.disconnect": "MQTT Explorer: Disconnect",
+  "command.connectProfile": "MQTT Explorer: Connect Profile",
+  "command.saveConnectionProfile": "MQTT Explorer: Save Connection Profile",
+  "command.deleteConnectionProfile": "MQTT Explorer: Delete Connection Profile",
+  "command.publish": "MQTT Explorer: Publish Message",
+  "command.inspectMessage": "MQTT Explorer: Inspect Message",
+  "command.copyTopic": "MQTT Explorer: Copy Topic",
+  "command.setTopicFilter": "MQTT Explorer: Set Topic Filter",
+  "command.clearTopicFilter": "MQTT Explorer: Clear Topic Filter",
+  "command.openLiveTopic": "MQTT Explorer: Open Live Topic",
+  "view.mqttExplorer": "MQTT Explorer"
+}

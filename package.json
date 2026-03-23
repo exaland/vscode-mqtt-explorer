@@ -1,0 +1,180 @@
+{
+  "name": "mqtt-explorer-vscode",
+  "displayName": "%extension.displayName%",
+  "description": "%extension.description%",
+  "version": "1.0.0",
+  "publisher": "exaland",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/exaland/vscode-mqtt-explorer.git"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/exaland"
+  },
+  "l10n": "./l10n",
+  "categories": [
+    "Other",
+    "Debuggers",
+    "Extension Packs",
+    "Formatters",
+    "Keymaps",
+    "Language Packs",
+    "Linters",
+    "Snippets",
+    "Themes"
+  ],
+  "icon": "./iconmqtt.png",
+  "activationEvents": [
+    "onView:mqttExplorerView",
+    "onCommand:mqttExplorer.connect",
+    "onCommand:mqttExplorer.openConnectionManager",
+    "onCommand:mqttExplorer.connectProfile",
+    "onCommand:mqttExplorer.saveConnectionProfile",
+    "onCommand:mqttExplorer.deleteConnectionProfile",
+    "onCommand:mqttExplorer.disconnect",
+    "onCommand:mqttExplorer.publish",
+    "onCommand:mqttExplorer.inspectMessage",
+    "onCommand:mqttExplorer.copyTopic",
+    "onCommand:mqttExplorer.setTopicFilter",
+    "onCommand:mqttExplorer.clearTopicFilter",
+    "onCommand:mqttExplorer.openLiveTopic"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "mqttExplorer.connect",
+        "title": "%command.connect%"
+      },
+      {
+        "command": "mqttExplorer.openConnectionManager",
+        "title": "%command.openConnectionManager%"
+      },
+      {
+        "command": "mqttExplorer.disconnect",
+        "title": "%command.disconnect%"
+      },
+      {
+        "command": "mqttExplorer.connectProfile",
+        "title": "%command.connectProfile%"
+      },
+      {
+        "command": "mqttExplorer.saveConnectionProfile",
+        "title": "%command.saveConnectionProfile%"
+      },
+      {
+        "command": "mqttExplorer.deleteConnectionProfile",
+        "title": "%command.deleteConnectionProfile%"
+      },
+      {
+        "command": "mqttExplorer.publish",
+        "title": "%command.publish%"
+      },
+      {
+        "command": "mqttExplorer.inspectMessage",
+        "title": "%command.inspectMessage%"
+      },
+      {
+        "command": "mqttExplorer.copyTopic",
+        "title": "%command.copyTopic%"
+      },
+      {
+        "command": "mqttExplorer.setTopicFilter",
+        "title": "%command.setTopicFilter%"
+      },
+      {
+        "command": "mqttExplorer.clearTopicFilter",
+        "title": "%command.clearTopicFilter%"
+      },
+      {
+        "command": "mqttExplorer.openLiveTopic",
+        "title": "%command.openLiveTopic%"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "mqttExplorerView",
+          "name": "%view.mqttExplorer%"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "mqttExplorer.openConnectionManager",
+          "when": "view == mqttExplorerView",
+          "group": "navigation"
+        },
+        {
+          "command": "mqttExplorer.connect",
+          "when": "view == mqttExplorerView",
+          "group": "navigation"
+        },
+        {
+          "command": "mqttExplorer.disconnect",
+          "when": "view == mqttExplorerView",
+          "group": "navigation"
+        },
+        {
+          "command": "mqttExplorer.publish",
+          "when": "view == mqttExplorerView",
+          "group": "navigation"
+        },
+        {
+          "command": "mqttExplorer.connectProfile",
+          "when": "view == mqttExplorerView",
+          "group": "navigation"
+        },
+        {
+          "command": "mqttExplorer.setTopicFilter",
+          "when": "view == mqttExplorerView",
+          "group": "navigation"
+        },
+        {
+          "command": "mqttExplorer.clearTopicFilter",
+          "when": "view == mqttExplorerView",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "mqttExplorer.inspectMessage",
+          "when": "view == mqttExplorerView && viewItem == topicLeaf",
+          "group": "inline"
+        },
+        {
+          "command": "mqttExplorer.publish",
+          "when": "view == mqttExplorerView && viewItem =~ /^topic/",
+          "group": "inline"
+        },
+        {
+          "command": "mqttExplorer.copyTopic",
+          "when": "view == mqttExplorerView && viewItem =~ /^topic/",
+          "group": "inline"
+        },
+        {
+          "command": "mqttExplorer.openLiveTopic",
+          "when": "view == mqttExplorerView && viewItem =~ /^topic/",
+          "group": "inline"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.50",
+    "@types/vscode": "^1.95.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "mqtt": "^5.14.1"
+  }
+}
