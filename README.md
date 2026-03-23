@@ -1,5 +1,8 @@
 # MQTT Explorer (VS Code Extension)
 
+
+[![qgRBv44.md.png](https://iili.io/qgRBv44.md.png)](https://freeimage.host/i/qgRBv44)
+[![qgRBkGf.md.png](https://iili.io/qgRBkGf.md.png)](https://freeimage.host/i/qgRBkGf)
 This extension adds an MQTT view to VS Code:
 
 - Connection to an MQTT broker
@@ -12,14 +15,6 @@ This extension adds an MQTT view to VS Code:
 - Posting messages
 
 ## Quick Start
-
-1. Open the `vscode-mqtt-explorer` folder in VS Code.
-
-2. Run `npm install`.
-
-3. Run `npm run compile`.
-
-4. Press `F5` to launch the Development Host.
 
 5. Open the **MQTT Explorer** view in the file explorer.
 

@@ -2,7 +2,7 @@
   "name": "mqtt-explorer-vscode",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "exaland",
   "engines": {
     "vscode": "^1.95.0"
