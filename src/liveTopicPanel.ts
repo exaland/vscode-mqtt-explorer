@@ -45,7 +45,7 @@ export class LiveTopicPanel {
     topic: string,
     details?: { payload: string; qos: 0 | 1 | 2; retain: boolean; time: string }
   ): string {
-    const language = vscode.env.language.toLowerCase().startsWith('de') ? 'de' : 'en'
+    const language = vscode.env.language || 'en'
     const payload = details?.payload ?? `<i>${vscode.l10n.t('No message received for this topic since opening the panel.')}</i>`
     const meta = details
       ? `<div><strong>${vscode.l10n.t('QoS')}:</strong> ${details.qos} | <strong>${vscode.l10n.t('Retain')}:</strong> ${details.retain ? vscode.l10n.t('yes') : vscode.l10n.t('no')} | <strong>${vscode.l10n.t('Date')}:</strong> ${details.time}</div>`

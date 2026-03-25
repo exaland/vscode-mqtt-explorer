@@ -13,5 +13,6 @@
   "command.setTopicFilter": "MQTT Explorer: Set Topic Filter",
   "command.clearTopicFilter": "MQTT Explorer: Clear Topic Filter",
   "command.openLiveTopic": "MQTT Explorer: Open Live Topic",
+  "command.openTopicTreeEditor": "MQTT Explorer: Open Topic Tree Editor",
   "view.mqttExplorer": "MQTT Explorer"
 }

@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { ConnectionManagerPanel } from './connectionManagerPanel'
 import { LiveTopicPanel } from './liveTopicPanel'
+import { TopicTreeEditorPanel } from './topicTreeEditorPanel'
 import { MqttService } from './mqttService'
 import { TopicNode, TopicTreeProvider } from './topicTreeProvider'
 import { ConnectionOptions, ConnectionProfile } from './types'
@@ -13,6 +14,44 @@ export function activate(context: vscode.ExtensionContext): void {
   const mqttService = new MqttService()
   const topicTreeProvider = new TopicTreeProvider()
   const liveTopicPanel = new LiveTopicPanel()
+  const topicTreeEditorPanel = new TopicTreeEditorPanel({
+    getTopicData: () => topicTreeProvider.getTopicsAsItems(),
+    getFilter: () => topicTreeProvider.getFilter(),
+    setFilter: filter => {
+      topicTreeProvider.setFilter(filter)
+      void context.globalState.update(TOPIC_FILTER_KEY, filter)
+    },
+    onCopyTopic: async topic => {
+      await vscode.env.clipboard.writeText(topic)
+      void vscode.window.showInformationMessage(vscode.l10n.t('Topic copied: {0}', topic))
+    },
+  })
+  context.subscriptions.push(
+    vscode.commands.registerCommand('mqttExplorer.actions', async () => {
+      const action = await vscode.window.showQuickPick([
+        { label: '--- Connection ---', kind: vscode.QuickPickItemKind.Separator },
+        { label: '$(plug) Connect', command: 'mqttExplorer.connect' },
+        // Open connection manager is more discoverable and provides more value than connect profile, so it should be listed separately.
+        { label: '$(settings) Connection Manager', command: 'mqttExplorer.openConnectionManager' },
+        { label: '$(debug-disconnect) Disconnect', command: 'mqttExplorer.disconnect' },
+
+        { label: '--- Messages ---', kind: vscode.QuickPickItemKind.Separator },
+        { label: '$(cloud-upload) Publish', command: 'mqttExplorer.publish' },
+        { label: '$(search) Inspect Message', command: 'mqttExplorer.inspectMessage' },
+
+        { label: '--- Topics ---', kind: vscode.QuickPickItemKind.Separator },
+        // Open Topic Tree Editor is a bit hidden and can be useful for users to discover it through this menu.
+        { label: '$(edit) Edit Topic Tree', command: 'mqttExplorer.openTopicTreeEditor' },
+        { label: '$(copy) Copy Topic', command: 'mqttExplorer.copyTopic' },
+        { label: '$(eye) Open Live Topic', command: 'mqttExplorer.openLiveTopic' },
+      ])
+
+      if (action) {
+        vscode.commands.executeCommand(action.command as string)
+      }
+    })
+  )
+
   const initialFilter = context.globalState.get<string>(TOPIC_FILTER_KEY) ?? ''
   topicTreeProvider.setFilter(initialFilter)
   let currentConnection: ConnectionOptions | undefined
@@ -46,12 +85,14 @@ export function activate(context: vscode.ExtensionContext): void {
     mqttService,
     statusBar,
     connectionManagerPanel,
+    topicTreeEditorPanel,
     vscode.window.registerTreeDataProvider('mqttExplorerView', topicTreeProvider)
   )
 
   mqttService.onDidReceiveMessage(message => {
     topicTreeProvider.upsertMessage(message)
     liveTopicPanel.update(message)
+    topicTreeEditorPanel.update()
   })
 
   mqttService.onDidChangeConnection(state => {
@@ -96,7 +137,9 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('mqttExplorer.connectProfile', async () => {
       const profiles = getProfiles(context)
       if (profiles.length === 0) {
-        void vscode.window.showWarningMessage(vscode.l10n.t('No saved profile found. Use MQTT Explorer: Save Connection Profile.'))
+        void vscode.window.showWarningMessage(
+          vscode.l10n.t('No saved profile found. Use MQTT Explorer: Save Connection Profile.')
+        )
         return
       }
 
@@ -298,6 +341,10 @@ export function activate(context: vscode.ExtensionContext): void {
       if (latest) {
         liveTopicPanel.update(latest)
       }
+    }),
+    vscode.commands.registerCommand('mqttExplorer.openTopicTreeEditor', () => {
+      topicTreeEditorPanel.open()
+      topicTreeEditorPanel.update()
     })
   )
 }

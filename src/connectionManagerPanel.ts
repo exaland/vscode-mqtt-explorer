@@ -171,7 +171,7 @@ export class ConnectionManagerPanel implements vscode.Disposable {
 
   private getHtml(webview: vscode.Webview): string {
     const nonce = String(Date.now())
-    const language = vscode.env.language.toLowerCase().startsWith('de') ? 'de' : 'en'
+    const language = vscode.env.language || 'en'
     const strings = {
       disconnected: vscode.l10n.t('Disconnected'),
       connectedTo: vscode.l10n.t('Connected to'),
@@ -558,18 +558,22 @@ export class ConnectionManagerPanel implements vscode.Disposable {
         el.profileList.innerHTML = '<div class="empty-state">' + i18n.noProfile + '</div>';
       } else {
         el.profileList.innerHTML = state.profiles.map(p => \`
-          <div class="profile-item \${p.name === state.selectedProfileName ? 'active' : ''}" onclick="selectProfile('\${encodeURIComponent(p.name)}')">
+          <div class="profile-item \${p.name === state.selectedProfileName ? 'active' : ''}" data-profile="\${escapeHtml(p.name)}">
             <span class="p-name">\${escapeHtml(p.name)}</span>
-            <span class="p-url">\${p.options.protocol}://\${p.options.host}</span>
+            <span class="p-url">\${escapeHtml(p.options.protocol)}://\${escapeHtml(p.options.host)}</span>
           </div>
         \`).join('');
+        el.profileList.querySelectorAll('.profile-item[data-profile]').forEach(item => {
+          item.addEventListener('click', () => {
+            const name = item.getAttribute('data-profile');
+            if (name !== null) {
+              vscode.postMessage({ type: 'selectProfile', profileName: name });
+            }
+          });
+        });
       }
       syncSubtitle();
     }
-
-    window.selectProfile = (name) => {
-      vscode.postMessage({ type: 'selectProfile', profileName: decodeURIComponent(name) });
-    };
 
     function getDraftOptions() {
       let proto = el.protocol.value;

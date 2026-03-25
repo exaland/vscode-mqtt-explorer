@@ -2,7 +2,7 @@
   "name": "mqtt-explorer-vscode",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "exaland",
   "engines": {
     "vscode": "^1.95.0"
@@ -40,58 +40,76 @@
     "onCommand:mqttExplorer.copyTopic",
     "onCommand:mqttExplorer.setTopicFilter",
     "onCommand:mqttExplorer.clearTopicFilter",
-    "onCommand:mqttExplorer.openLiveTopic"
+    "onCommand:mqttExplorer.openLiveTopic",
+    "onCommand:mqttExplorer.openTopicTreeEditor"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "mqttExplorer.connect",
-        "title": "%command.connect%"
+        "title": "%command.connect%",
+        "icon": "$(plug)"
       },
       {
         "command": "mqttExplorer.openConnectionManager",
-        "title": "%command.openConnectionManager%"
+        "title": "%command.openConnectionManager%",
+        "icon": "$(settings-gear)"
       },
       {
         "command": "mqttExplorer.disconnect",
-        "title": "%command.disconnect%"
+        "title": "%command.disconnect%",
+        "icon": "$(debug-disconnect)"
       },
       {
         "command": "mqttExplorer.connectProfile",
-        "title": "%command.connectProfile%"
+        "title": "%command.connectProfile%",
+        "icon": "$(person)"
       },
       {
         "command": "mqttExplorer.saveConnectionProfile",
-        "title": "%command.saveConnectionProfile%"
+        "title": "%command.saveConnectionProfile%",
+        "icon": "$(save)"
       },
       {
         "command": "mqttExplorer.deleteConnectionProfile",
-        "title": "%command.deleteConnectionProfile%"
+        "title": "%command.deleteConnectionProfile%",
+        "icon": "$(trash)"
       },
       {
         "command": "mqttExplorer.publish",
-        "title": "%command.publish%"
+        "title": "%command.publish%",
+        "icon": "$(cloud-upload)"
       },
       {
         "command": "mqttExplorer.inspectMessage",
-        "title": "%command.inspectMessage%"
+        "title": "%command.inspectMessage%",
+        "icon": "$(eye)"
       },
       {
         "command": "mqttExplorer.copyTopic",
-        "title": "%command.copyTopic%"
+        "title": "%command.copyTopic%",
+        "icon": "$(copy)"
       },
       {
         "command": "mqttExplorer.setTopicFilter",
-        "title": "%command.setTopicFilter%"
+        "title": "%command.setTopicFilter%",
+        "icon": "$(filter)"
       },
       {
         "command": "mqttExplorer.clearTopicFilter",
-        "title": "%command.clearTopicFilter%"
+        "title": "%command.clearTopicFilter%",
+        "icon": "$(clear-all)"
       },
       {
         "command": "mqttExplorer.openLiveTopic",
-        "title": "%command.openLiveTopic%"
+        "title": "%command.openLiveTopic%",
+        "icon": "$(radio-tower)"
+      },
+      {
+        "command": "mqttExplorer.openTopicTreeEditor",
+        "title": "%command.openTopicTreeEditor%",
+        "icon": "$(list-tree)"
       }
     ],
     "views": {
@@ -107,37 +125,52 @@
         {
           "command": "mqttExplorer.openConnectionManager",
           "when": "view == mqttExplorerView",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
-          "command": "mqttExplorer.connect",
+          "command": "mqttExplorer.openTopicTreeEditor",
           "when": "view == mqttExplorerView",
-          "group": "navigation"
-        },
-        {
-          "command": "mqttExplorer.disconnect",
-          "when": "view == mqttExplorerView",
-          "group": "navigation"
+          "group": "navigation@2"
         },
         {
           "command": "mqttExplorer.publish",
           "when": "view == mqttExplorerView",
-          "group": "navigation"
+          "group": "navigation@3"
+        },
+        {
+          "command": "mqttExplorer.connect",
+          "when": "view == mqttExplorerView",
+          "group": "1_connect@1"
         },
         {
           "command": "mqttExplorer.connectProfile",
           "when": "view == mqttExplorerView",
-          "group": "navigation"
+          "group": "1_connect@2"
+        },
+        {
+          "command": "mqttExplorer.saveConnectionProfile",
+          "when": "view == mqttExplorerView",
+          "group": "1_connect@3"
+        },
+        {
+          "command": "mqttExplorer.deleteConnectionProfile",
+          "when": "view == mqttExplorerView",
+          "group": "1_connect@4"
+        },
+        {
+          "command": "mqttExplorer.disconnect",
+          "when": "view == mqttExplorerView",
+          "group": "1_connect@5"
         },
         {
           "command": "mqttExplorer.setTopicFilter",
           "when": "view == mqttExplorerView",
-          "group": "navigation"
+          "group": "2_filter@1"
         },
         {
           "command": "mqttExplorer.clearTopicFilter",
           "when": "view == mqttExplorerView",
-          "group": "navigation"
+          "group": "2_filter@2"
         }
       ],
       "view/item/context": [

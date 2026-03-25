@@ -149,4 +149,45 @@ export class TopicTreeProvider implements vscode.TreeDataProvider<TopicNode> {
 
     return false
   }
+
+  public getTopicsAsItems(): Array<{ topic: string; name: string; payload?: string; qos?: 0 | 1 | 2; retain?: boolean; timestamp?: number; children: any[] }> {
+    const toItem = (branch: TopicBranch): any => {
+      if (!this.matchesFilter(branch)) {
+        return null
+      }
+
+      const children: any[] = []
+      for (const child of Array.from(branch.children.values()).sort((a, b) => a.name.localeCompare(b.name))) {
+        const childItem = toItem(child)
+        if (childItem !== null) {
+          children.push(childItem)
+        }
+      }
+
+      const item: any = {
+        topic: branch.fullTopic,
+        name: branch.name,
+        children,
+      }
+
+      if (branch.message) {
+        item.payload = branch.message.payload
+        item.qos = branch.message.qos
+        item.retain = branch.message.retain
+        item.timestamp = branch.message.timestamp
+      }
+
+      return item
+    }
+
+    const items: any[] = []
+    for (const child of Array.from(this.root.children.values()).sort((a, b) => a.name.localeCompare(b.name))) {
+      const item = toItem(child)
+      if (item !== null) {
+        items.push(item)
+      }
+    }
+
+    return items
+  }
 }
