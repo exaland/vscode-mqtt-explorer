@@ -1,6 +1,11 @@
 # Changelog
 
-## 1.0.1 — 2026-03-26
+## 1.0.3 — 2026-03-26
+### Additions
+- **New command**: `MQTT Explorer: Copy Topic as JSON` to copy the topic and payload as a JSON object to the clipboard, for easy sharing or debugging.
+
+
+## 1.0.2 — 2026-03-26
 
 ### Additions
 - **Visual Topic Editor**: New interactive panel (`MQTT Explorer: Open Topic Tree Editor`) displaying the topic tree in real time with filtering, message details (QoS, Retain, timestamp), payload preview, and one-click topic copying.
