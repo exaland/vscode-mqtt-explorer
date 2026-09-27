@@ -39,6 +39,6 @@ Cette extension apporte une vue MQTT dans VS Code :
 - Protocoles supportes : `mqtt`, `mqtts`, `ws`, `wss`
 - L'extension affiche le dernier payload vu pour chaque topic.
 
-## 1.1.0
+## 1.0.4
 
-La version 1.1.0 fiabilise la reconnexion, préserve les niveaux vides des topics et regroupe les rafraîchissements. Faites un clic droit sur un topic contenant un message, puis choisissez **Copier le topic en JSON** pour copier son payload et ses métadonnées. Lancez `npm test` pour vérifier les régressions.
+La version 1.0.4 fiabilise la reconnexion, préserve les niveaux vides des topics et regroupe les rafraîchissements. Faites un clic droit sur un topic contenant un message, puis choisissez **Copier le topic en JSON** pour copier son payload et ses métadonnées. Lancez `npm test` pour vérifier les régressions.

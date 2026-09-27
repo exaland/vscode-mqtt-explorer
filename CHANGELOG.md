@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 — 2026-09-28
+## 1.0.4 — 2026-09-28
 
 - Restore connection state and subscriptions after automatic reconnection.
 - Settle cancelled and timed-out connection attempts; stop retrying failed initial connections.
