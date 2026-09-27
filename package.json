@@ -28,22 +28,6 @@
     "Themes"
   ],
   "icon": "./iconmqtt.png",
-  "activationEvents": [
-    "onView:mqttExplorerView",
-    "onCommand:mqttExplorer.connect",
-    "onCommand:mqttExplorer.openConnectionManager",
-    "onCommand:mqttExplorer.connectProfile",
-    "onCommand:mqttExplorer.saveConnectionProfile",
-    "onCommand:mqttExplorer.deleteConnectionProfile",
-    "onCommand:mqttExplorer.disconnect",
-    "onCommand:mqttExplorer.publish",
-    "onCommand:mqttExplorer.inspectMessage",
-    "onCommand:mqttExplorer.copyTopic",
-    "onCommand:mqttExplorer.setTopicFilter",
-    "onCommand:mqttExplorer.clearTopicFilter",
-    "onCommand:mqttExplorer.openLiveTopic",
-    "onCommand:mqttExplorer.openTopicTreeEditor"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -117,7 +101,8 @@
       "explorer": [
         {
           "id": "mqttExplorerView",
-          "name": "%view.mqttExplorer%"
+          "name": "%view.mqttExplorer%",
+          "icon": "iconmqtt.png"
         }
       ]
     },
@@ -205,10 +190,10 @@
   },
   "devDependencies": {
     "@types/node": "^20.17.50",
-    "@types/vscode": "^1.95.0",
-    "typescript": "^5.9.3"
+    "@types/vscode": "^1.138.0",
+    "typescript": "^7.0.2"
   },
   "dependencies": {
-    "mqtt": "^5.14.1"
+    "mqtt": "^5.16.0"
   }
 }

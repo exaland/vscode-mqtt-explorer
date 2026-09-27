@@ -42,7 +42,7 @@ export class ConnectionManagerPanel implements vscode.Disposable {
       this.panel = vscode.window.createWebviewPanel(
         'mqttExplorerConnectionManager',
         vscode.l10n.t('MQTT Connection Manager'),
-        vscode.ViewColumn.Beside,
+        vscode.ViewColumn.Active,
         {
           enableScripts: true,
           retainContextWhenHidden: true,
@@ -58,7 +58,7 @@ export class ConnectionManagerPanel implements vscode.Disposable {
       })
     }
 
-    this.panel.reveal(vscode.ViewColumn.Beside, true)
+    this.panel.reveal(vscode.ViewColumn.Active, true)
     void this.postState()
   }
 
