@@ -1,1 +1,4 @@
-{}
+{
+  "Connection cancelled.": "Connection cancelled.",
+  "MQTT connection timed out.": "MQTT connection timed out."
+}

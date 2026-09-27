@@ -5,6 +5,7 @@ import { ConnectionOptions, ConnectionState, MqttMessage } from './types'
 export class MqttService implements vscode.Disposable {
   private client: MqttClient | undefined
   private isConnected = false
+  private cancelConnection: (() => void) | undefined
 
   private readonly onDidReceiveMessageEmitter = new vscode.EventEmitter<MqttMessage>()
   private readonly onDidChangeConnectionEmitter = new vscode.EventEmitter<ConnectionState>()
@@ -37,7 +38,23 @@ export class MqttService implements vscode.Disposable {
 
       this.client = client
 
+      let settled = false
+      const settle = (error?: Error) => {
+        if (settled) return
+        settled = true
+        clearTimeout(timeout)
+        this.cancelConnection = undefined
+        if (error) reject(error)
+        else resolve()
+      }
+      this.cancelConnection = () => settle(new Error(vscode.l10n.t('Connection cancelled.')))
+      const timeout = setTimeout(() => {
+        settle(new Error(vscode.l10n.t('MQTT connection timed out.')))
+        this.disconnect()
+      }, 10000)
+
       const onConnect = () => {
+        if (this.client !== client) return
         this.isConnected = true
         this.onDidChangeConnectionEmitter.fire({
           connected: true,
@@ -50,25 +67,22 @@ export class MqttService implements vscode.Disposable {
           }
         })
 
-        cleanup()
-        resolve()
+        settle()
       }
 
-      const onError = (error: Error) => {
-        this.onDidErrorEmitter.fire(error)
-        cleanup()
-        reject(error)
-      }
-
-      const cleanup = () => {
-        client.off('connect', onConnect)
-        client.off('error', onError)
-      }
-
-      client.once('connect', onConnect)
-      client.once('error', onError)
+      client.on('connect', onConnect)
+      client.on('error', error => {
+        if (this.client !== client) return
+        if (!settled) {
+          settle(error)
+          this.disconnect()
+        } else {
+          this.onDidErrorEmitter.fire(error)
+        }
+      })
 
       client.on('reconnect', () => {
+        this.isConnected = false
         this.onDidChangeConnectionEmitter.fire({
           connected: false,
           detail: vscode.l10n.t('Reconnecting...'),
@@ -94,9 +108,6 @@ export class MqttService implements vscode.Disposable {
         })
       })
 
-      client.on('error', error => {
-        this.onDidErrorEmitter.fire(error)
-      })
     })
   }
 
@@ -105,9 +116,13 @@ export class MqttService implements vscode.Disposable {
       return
     }
 
-    this.client.end(true)
-    this.client.removeAllListeners()
+    const client = this.client
     this.client = undefined
+    this.cancelConnection?.()
+    client.removeAllListeners()
+    // Transport shutdown can still emit an error after listeners are removed.
+    client.on('error', () => {})
+    client.end(true)
     this.isConnected = false
     this.onDidChangeConnectionEmitter.fire({
       connected: false,

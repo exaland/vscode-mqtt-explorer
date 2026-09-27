@@ -11,8 +11,9 @@ interface TopicBranch {
 export class TopicNode extends vscode.TreeItem {
   constructor(public readonly branch: TopicBranch) {
     const hasChildren = branch.children.size > 0
-    super(branch.name, hasChildren ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None)
+    super(branch.name || '/', hasChildren ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None)
 
+    this.id = branch.fullTopic
     this.contextValue = branch.message ? 'topicLeaf' : 'topicBranch'
     this.description = branch.message ? previewPayload(branch.message.payload) : undefined
     this.tooltip = buildTooltip(branch)
@@ -55,7 +56,7 @@ function buildTooltip(branch: TopicBranch): string {
   ].join('\n')
 }
 
-export class TopicTreeProvider implements vscode.TreeDataProvider<TopicNode> {
+export class TopicTreeProvider implements vscode.TreeDataProvider<TopicNode>, vscode.Disposable {
   private readonly root: TopicBranch = {
     name: 'root',
     fullTopic: '',
@@ -65,8 +66,11 @@ export class TopicTreeProvider implements vscode.TreeDataProvider<TopicNode> {
   private readonly onDidChangeTreeDataEmitter = new vscode.EventEmitter<TopicNode | undefined>()
   public readonly onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event
   private topicFilter = ''
+  private refreshTimer: ReturnType<typeof setTimeout> | undefined
 
   public refresh(): void {
+    clearTimeout(this.refreshTimer)
+    this.refreshTimer = undefined
     this.onDidChangeTreeDataEmitter.fire(undefined)
   }
 
@@ -85,11 +89,11 @@ export class TopicTreeProvider implements vscode.TreeDataProvider<TopicNode> {
   }
 
   public upsertMessage(message: MqttMessage): void {
-    const segments = message.topic.split('/').filter(part => part.length > 0)
+    const segments = message.topic.split('/')
     let current = this.root
 
-    for (const segment of segments) {
-      const nextTopic = current.fullTopic ? `${current.fullTopic}/${segment}` : segment
+    for (const [index, segment] of segments.entries()) {
+      const nextTopic = segments.slice(0, index + 1).join('/')
       let child = current.children.get(segment)
       if (!child) {
         child = {
@@ -103,11 +107,18 @@ export class TopicTreeProvider implements vscode.TreeDataProvider<TopicNode> {
     }
 
     current.message = message
-    this.refresh()
+    if (!this.refreshTimer) {
+      this.refreshTimer = setTimeout(() => this.refresh(), 100)
+    }
+  }
+
+  public dispose(): void {
+    clearTimeout(this.refreshTimer)
+    this.onDidChangeTreeDataEmitter.dispose()
   }
 
   public getLatestMessage(topic: string): MqttMessage | undefined {
-    const segments = topic.split('/').filter(part => part.length > 0)
+    const segments = topic.split('/')
     let current: TopicBranch | undefined = this.root
 
     for (const segment of segments) {

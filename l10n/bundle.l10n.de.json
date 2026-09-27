@@ -85,5 +85,7 @@
   "Yes": "Ja",
   "e.g. Production AWS": "z. B. Produktion AWS",
   "no": "nein",
-  "yes": "ja"
+  "yes": "ja",
+  "Connection cancelled.": "Verbindung abgebrochen.",
+  "MQTT connection timed out.": "Zeitüberschreitung der MQTT-Verbindung."
 }

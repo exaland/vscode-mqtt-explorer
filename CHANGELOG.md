@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0 — 2026-09-28
+
+- Restore connection state and subscriptions after automatic reconnection.
+- Settle cancelled and timed-out connection attempts; stop retrying failed initial connections.
+- Preserve leading, trailing and consecutive slashes in MQTT topics.
+- Batch topic tree refreshes and synchronize the visual editor with filtering and clearing.
+- Add the missing Copy Topic as JSON command, including message metadata.
+- Dispose tree refresh timers and live panels when the extension stops.
+- Add regression tests (`npm test`) and compile automatically before packaging.
+- Resolve leftover merge markers in the dependency lockfile.
+
 ## 1.0.3 — 2026-03-26
 ### Additions
 - **New command**: `MQTT Explorer: Copy Topic as JSON` to copy the topic and payload as a JSON object to the clipboard, for easy sharing or debugging.

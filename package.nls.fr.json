@@ -14,5 +14,6 @@
   "command.clearTopicFilter": "Effacer le filtre de topic",
   "command.openLiveTopic": "Ouvrir un topic en direct",
   "command.openTopicTreeEditor": "Ouvrir l'éditeur d'arborescence des topics",
-  "view.mqttExplorer": "MQTT-Explorer"
+  "view.mqttExplorer": "MQTT-Explorer",
+  "command.copyTopicAsJson": "Copier le topic en JSON"
 }

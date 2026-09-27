@@ -1,7 +1,11 @@
 import * as vscode from 'vscode'
 import { MqttMessage } from './types'
 
-export class LiveTopicPanel {
+export class LiveTopicPanel implements vscode.Disposable {
+  public dispose(): void {
+    this.panel?.dispose()
+  }
+
   private panel: vscode.WebviewPanel | undefined
   private topic: string | undefined
 

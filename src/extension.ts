@@ -83,6 +83,8 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     mqttService,
+    topicTreeProvider,
+    liveTopicPanel,
     statusBar,
     connectionManagerPanel,
     topicTreeEditorPanel,
@@ -92,8 +94,9 @@ export function activate(context: vscode.ExtensionContext): void {
   mqttService.onDidReceiveMessage(message => {
     topicTreeProvider.upsertMessage(message)
     liveTopicPanel.update(message)
-    topicTreeEditorPanel.update()
   })
+
+  context.subscriptions.push(topicTreeProvider.onDidChangeTreeData(() => topicTreeEditorPanel.update()))
 
   mqttService.onDidChangeConnection(state => {
     statusBar.text = state.connected
@@ -293,6 +296,15 @@ export function activate(context: vscode.ExtensionContext): void {
       })
 
       await vscode.window.showTextDocument(document, { preview: false })
+    }),
+    vscode.commands.registerCommand('mqttExplorer.copyTopicAsJson', async (node?: TopicNode) => {
+      const message = node && topicTreeProvider.getLatestMessage(node.topic)
+      if (!message) {
+        void vscode.window.showWarningMessage(vscode.l10n.t('Select a topic with a message.'))
+        return
+      }
+      await vscode.env.clipboard.writeText(JSON.stringify(message, null, 2))
+      void vscode.window.showInformationMessage(vscode.l10n.t('Topic copied: {0}', message.topic))
     }),
     vscode.commands.registerCommand('mqttExplorer.copyTopic', async (node?: TopicNode) => {
       if (!node) {

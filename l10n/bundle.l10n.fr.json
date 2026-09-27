@@ -58,7 +58,7 @@
   "Profiles": "Profils",
   "Protocol": "Protocole",
   "Publish an MQTT message": "Publier un message MQTT",
- "Publish failed: {0}": "Échec de la publication : {0}",
+  "Publish failed: {0}": "Échec de la publication : {0}",
   "QoS": "QoS",
   "QoS 0": "QoS 0",
   "QoS 1": "QoS 1",
@@ -85,5 +85,7 @@
   "Yes": "Oui",
   "e.g. Production AWS": "par ex. Production AWS",
   "no": "non",
-  "yes": "oui"
+  "yes": "oui",
+  "Connection cancelled.": "Connexion annulée.",
+  "MQTT connection timed out.": "Délai de connexion MQTT dépassé."
 }
