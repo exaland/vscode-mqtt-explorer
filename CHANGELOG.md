@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.5
 
 - Clear cached topics and live payloads when switching brokers.
 - Ignore stale transport events from previous connections.
