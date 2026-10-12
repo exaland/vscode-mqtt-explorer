@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import mqtt, { MqttClient } from 'mqtt'
 import { ConnectionOptions, ConnectionState, MqttMessage } from './types'
+import { validateTopicName } from './topicValidation'
 
 export class MqttService implements vscode.Disposable {
   private client: MqttClient | undefined
@@ -82,6 +83,7 @@ export class MqttService implements vscode.Disposable {
       })
 
       client.on('reconnect', () => {
+        if (this.client !== client) return
         this.isConnected = false
         this.onDidChangeConnectionEmitter.fire({
           connected: false,
@@ -90,6 +92,7 @@ export class MqttService implements vscode.Disposable {
       })
 
       client.on('close', () => {
+        if (this.client !== client) return
         this.isConnected = false
         this.onDidChangeConnectionEmitter.fire({
           connected: false,
@@ -98,6 +101,7 @@ export class MqttService implements vscode.Disposable {
       })
 
       client.on('message', (topic, payload, packet) => {
+        if (this.client !== client) return
         const payloadAsString = payload.toString('utf8')
         this.onDidReceiveMessageEmitter.fire({
           topic,
@@ -131,6 +135,8 @@ export class MqttService implements vscode.Disposable {
   }
 
   public publish(topic: string, payload: string, qos: 0 | 1 | 2, retain: boolean): Promise<void> {
+    const validationError = validateTopicName(topic)
+    if (validationError) throw new Error(validationError)
     if (!this.client || !this.isConnected) {
       throw new Error(vscode.l10n.t('The MQTT client is not connected.'))
     }

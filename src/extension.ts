@@ -5,6 +5,7 @@ import { TopicTreeEditorPanel } from './topicTreeEditorPanel'
 import { MqttService } from './mqttService'
 import { TopicNode, TopicTreeProvider } from './topicTreeProvider'
 import { ConnectionOptions, ConnectionProfile } from './types'
+import { validateTopicName } from './topicValidation'
 
 const LAST_CONNECTION_KEY = 'mqttExplorer.lastConnection'
 const CONNECTION_PROFILES_KEY = 'mqttExplorer.connectionProfiles'
@@ -55,6 +56,15 @@ export function activate(context: vscode.ExtensionContext): void {
   const initialFilter = context.globalState.get<string>(TOPIC_FILTER_KEY) ?? ''
   topicTreeProvider.setFilter(initialFilter)
   let currentConnection: ConnectionOptions | undefined
+  const connect = async (options: ConnectionOptions): Promise<void> => {
+    // Clear before connecting: retained messages may arrive before connect resolves.
+    mqttService.disconnect()
+    topicTreeProvider.clear()
+    liveTopicPanel.reset()
+    currentConnection = undefined
+    await connectWithOptions(context, mqttService, options)
+    currentConnection = options
+  }
   const connectionManagerPanel = new ConnectionManagerPanel({
     getProfiles: () => getProfiles(context),
     getCurrentConnection: () => currentConnection ?? context.globalState.get<ConnectionOptions>(LAST_CONNECTION_KEY),
@@ -67,8 +77,7 @@ export function activate(context: vscode.ExtensionContext): void {
       void vscode.window.showInformationMessage(vscode.l10n.t('Profile deleted: {0}', name))
     },
     onConnect: async options => {
-      await connectWithOptions(context, mqttService, options)
-      currentConnection = options
+      await connect(options)
       void vscode.window.showInformationMessage(
         vscode.l10n.t('Connected to {0}', `${options.protocol}://${options.host}:${options.port}`)
       )
@@ -118,8 +127,7 @@ export function activate(context: vscode.ExtensionContext): void {
       }
 
       try {
-        await connectWithOptions(context, mqttService, options)
-        currentConnection = options
+        await connect(options)
         void vscode.window.showInformationMessage(
           vscode.l10n.t('Connected to {0}', `${options.protocol}://${options.host}:${options.port}`)
         )
@@ -134,6 +142,7 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.commands.registerCommand('mqttExplorer.disconnect', () => {
       mqttService.disconnect()
       topicTreeProvider.clear()
+      liveTopicPanel.reset()
       currentConnection = undefined
       void vscode.window.showInformationMessage(vscode.l10n.t('MQTT disconnected.'))
     }),
@@ -160,8 +169,7 @@ export function activate(context: vscode.ExtensionContext): void {
       }
 
       try {
-        await connectWithOptions(context, mqttService, selected.profile.options)
-        currentConnection = selected.profile.options
+        await connect(selected.profile.options)
         void vscode.window.showInformationMessage(vscode.l10n.t('Profile connected: {0}', selected.profile.name))
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error)
@@ -218,7 +226,7 @@ export function activate(context: vscode.ExtensionContext): void {
         title: vscode.l10n.t('Publish an MQTT message'),
         prompt: vscode.l10n.t('Topic'),
         value: defaultTopic,
-        validateInput: value => (value.trim() ? undefined : vscode.l10n.t('Topic is required')),
+        validateInput: validateTopicName,
       })
 
       if (!topic) {
@@ -341,7 +349,7 @@ export function activate(context: vscode.ExtensionContext): void {
         (await vscode.window.showInputBox({
           title: vscode.l10n.t('Open a live topic'),
           prompt: vscode.l10n.t('Exact topic to follow'),
-          validateInput: value => (value.trim() ? undefined : vscode.l10n.t('Topic is required')),
+          validateInput: validateTopicName,
         }))
 
       if (!topic) {

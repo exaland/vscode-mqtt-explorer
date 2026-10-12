@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Clear cached topics and live payloads when switching brokers.
+- Ignore stale transport events from previous connections.
+- Validate publication topics, including wildcards, null characters and UTF-8 byte length.
+- Format JSON payloads in the live panel and use the VS Code theme.
+- Add regression tests for publication validation, stale events and live rendering.
+
 ## 1.0.4 — 2026-09-28
 
 - Restore connection state and subscriptions after automatic reconnection.

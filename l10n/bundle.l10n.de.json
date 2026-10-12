@@ -1,4 +1,7 @@
 {
+  "Topic must not contain a null character.": "Das Topic darf kein Nullzeichen enthalten.",
+  "Topic must not contain MQTT wildcards (+ or #).": "Das Topic darf keine MQTT-Platzhalter (+ oder #) enthalten.",
+  "Topic must not exceed 65535 UTF-8 bytes.": "Das Topic darf höchstens 65535 UTF-8-Bytes enthalten.",
   " (empty)": " (leer)",
   "$(circle-slash) MQTT: disconnected": "$(circle-slash) MQTT: getrennt",
   "$(plug) MQTT: connected": "$(plug) MQTT: verbunden",

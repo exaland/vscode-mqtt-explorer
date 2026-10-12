@@ -1,5 +1,7 @@
 # MQTT Explorer (VS Code Extension)
 
+The live panel formats JSON payloads and follows your VS Code theme. Switching connections clears previous topics and live payloads. Publication validates topic names before sending (no `+` or `#` wildcards, no null characters, at most 65,535 UTF-8 bytes).
+
 
 [![qgRBv44.md.png](https://iili.io/qgRBv44.md.png)](https://freeimage.host/i/qgRBv44)
 [![qgRBkGf.md.png](https://iili.io/qgRBkGf.md.png)](https://freeimage.host/i/qgRBkGf)
@@ -47,3 +49,9 @@ This extension adds an MQTT view to VS Code:
 Version 1.0.4 improves reconnection, 
 Preserves empty topic levels, and batches tree updates. 
 Right-click a topic with a message and choose **Copy Topic as JSON** to copy its payload and metadata. 
+
+## 1.0.5
+- The live panel forms JSON payloads and uses the VS Code theme.
+- Changing the connection erases the topics and messages from the previous connection.
+- Publication topics are validated before sending (without `+` or `#` jokers, without zero character, maximum 65 535 bytes UTF-8).
+.

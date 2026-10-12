@@ -3,6 +3,7 @@ const assert = require('node:assert/strict')
 const { EventEmitter } = require('node:events')
 const Module = require('node:module')
 const clients = []
+const panels = []
 class Client extends EventEmitter {
   subscribe() { this.subscriptions = (this.subscriptions || 0) + 1 }
   publish(topic, payload, options, callback) { callback() }
@@ -20,12 +21,21 @@ Module._load = function (id, ...args) {
     TreeItem: class { constructor(label) { this.label = label } },
     TreeItemCollapsibleState: { Collapsed: 1, None: 0 },
     l10n: { t: (text, ...values) => text.replace(/\{(\d+)\}/g, (_, i) => values[i]) },
+    env: { language: 'fr' },
+    ViewColumn: { Beside: 2 },
+    window: { createWebviewPanel: () => {
+      const panel = { webview: { html: '' }, onDidDispose() {}, reveal() {}, dispose() {} }
+      panels.push(panel)
+      return panel
+    } },
   }
   if (id === 'mqtt') return { connect: () => { const client = new Client(); clients.push(client); return client } }
   return originalLoad.call(this, id, ...args)
 }
 const { MqttService } = require('../out/mqttService')
 const { TopicTreeProvider } = require('../out/topicTreeProvider')
+const { LiveTopicPanel } = require('../out/liveTopicPanel')
+const { validateTopicName } = require('../out/topicValidation')
 Module._load = originalLoad
 const options = { protocol: 'mqtt', host: 'localhost', port: 1883 }
 
@@ -84,4 +94,57 @@ test('message bursts produce one refresh and clear cancels pending refresh', asy
   assert.equal(refreshes, 2)
   assert.deepEqual(tree.getChildren(), [])
   tree.dispose()
+})
+
+test('publication rejects invalid topic names before sending to the broker', async () => {
+  const service = new MqttService()
+  const pending = service.connect(options)
+  clients.at(-1).emit('connect')
+  await pending
+  for (const topic of ['', 'a/+', '#', 'a\u0000b', 'é'.repeat(32768)]) {
+    assert.ok(validateTopicName(topic))
+    assert.throws(() => service.publish(topic, '', 0, false))
+  }
+  for (const topic of [' ', '/', 'a//b/', 'é'.repeat(32767)]) {
+    assert.equal(validateTopicName(topic), undefined)
+    await service.publish(topic, '', 0, false)
+  }
+  service.dispose()
+})
+
+test('events already queued by an old client cannot affect a new connection', async () => {
+  const service = new MqttService()
+  const first = service.connect(options)
+  const oldClient = clients.at(-1)
+  oldClient.emit('connect')
+  await first
+  const staleClose = oldClient.listeners('close')[0]
+  const staleMessage = oldClient.listeners('message')[0]
+  const second = service.connect(options)
+  clients.at(-1).emit('connect')
+  await second
+  let messages = 0
+  service.onDidReceiveMessage(() => messages++)
+  staleClose()
+  staleMessage('old/topic', Buffer.from('old'), { qos: 0 })
+  assert.equal(messages, 0)
+  await service.publish('new/topic', 'new', 0, false)
+  service.dispose()
+})
+
+test('live panel formats JSON, escapes payloads and resets previous broker data', () => {
+  const live = new LiveTopicPanel()
+  live.open('sensor')
+  const panel = panels.at(-1)
+  const message = { topic: 'sensor', payload: '{"value":"<script>"}', qos: 1, retain: false, timestamp: 0 }
+  live.update(message)
+  assert.ok(panel.webview.html.includes('\n  &quot;value&quot;: &quot;&lt;script&gt;&quot;\n'))
+  live.update({ ...message, topic: 'other', payload: 'ignored' })
+  assert.ok(!panel.webview.html.includes('ignored'))
+  live.update({ ...message, payload: 'plain <text>' })
+  assert.ok(panel.webview.html.includes('plain &lt;text&gt;'))
+  live.reset()
+  assert.ok(!panel.webview.html.includes('plain &lt;text&gt;'))
+  assert.ok(panel.webview.html.includes('No message received'))
+  live.dispose()
 })

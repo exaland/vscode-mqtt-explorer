@@ -9,6 +9,12 @@ export class LiveTopicPanel implements vscode.Disposable {
   private panel: vscode.WebviewPanel | undefined
   private topic: string | undefined
 
+  public reset(): void {
+    if (this.panel && this.topic !== undefined) {
+      this.panel.webview.html = this.buildHtml(this.topic)
+    }
+  }
+
   public open(topic: string): void {
     this.topic = topic
 
@@ -35,7 +41,13 @@ export class LiveTopicPanel implements vscode.Disposable {
       return
     }
 
-    const payload = this.escapeHtml(message.payload)
+    let formattedPayload = message.payload
+    try {
+      formattedPayload = JSON.stringify(JSON.parse(message.payload), null, 2)
+    } catch {
+      // Plain text and binary-decoded payloads remain unchanged.
+    }
+    const payload = this.escapeHtml(formattedPayload)
     const now = new Date(message.timestamp).toLocaleString()
     this.panel.webview.html = this.buildHtml(this.topic, {
       payload,
@@ -65,7 +77,9 @@ export class LiveTopicPanel implements vscode.Disposable {
       color-scheme: light dark;
     }
     body {
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+      font-family: var(--vscode-font-family);
+      color: var(--vscode-foreground);
+      background: var(--vscode-editor-background);
       margin: 16px;
       line-height: 1.4;
     }
@@ -74,6 +88,7 @@ export class LiveTopicPanel implements vscode.Disposable {
       font-weight: 600;
     }
     pre {
+      font-family: var(--vscode-editor-font-family);
       white-space: pre-wrap;
       word-break: break-word;
       border: 1px solid rgba(127, 127, 127, 0.35);

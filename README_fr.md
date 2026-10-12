@@ -42,3 +42,8 @@ Cette extension apporte une vue MQTT dans VS Code :
 ## 1.0.4
 
 La version 1.0.4 fiabilise la reconnexion, préserve les niveaux vides des topics et regroupe les rafraîchissements. Faites un clic droit sur un topic contenant un message, puis choisissez **Copier le topic en JSON** pour copier son payload et ses métadonnées. Lancez `npm test` pour vérifier les régressions.
+
+## 1.0.5
+- Le panneau live met en forme les payloads JSON et utilise le thème VS Code.
+- Changer de connexion efface les topics et messages de la connexion précédente.
+- Les topics de publication sont validés avant envoi (sans jokers `+` ou `#`, sans caractère nul, au maximum 65 535 octets UTF-8).
